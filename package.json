@@ -1,0 +1,25 @@
+{
+  "name": "todo-app-main",
+  "version": "1.0.0",
+  "description": "![Design preview for the Todo app coding challenge](./design/desktop-preview.jpg)",
+  "type": "module",
+  "scripts": {
+    "start":"parcel index.html",
+    "build":"parcel build index.html"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hanan-Mir/To-Do-App.git"
+  },
+  "author": "Hanan-Mir",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.13.3",
+    "svgo": "^3.3.2"
+  },
+  "bugs": {
+    "url": "https://github.com/Hanan-Mir/To-Do-App/issues"
+  },
+  "homepage": "https://github.com/Hanan-Mir/To-Do-App#readme"
+}

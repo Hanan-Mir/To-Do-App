@@ -4,6 +4,7 @@ class CrossView extends View{
 
 _crossBtn=document.querySelector('.cross');
 _completedTodo;
+_completedTodoArr=[];
 addHandlerClickCross(handler){
     this._todocontainer.addEventListener('click',(e)=>{
         if(e.target.classList.contains('todocheck')){
@@ -13,12 +14,17 @@ addHandlerClickCross(handler){
                 if(todo.checked){
 
                     todo.setAttribute('disabled',true);
+                    this._completedTodoArr.push(todo.getAttribute('data-id'));
+
                 }
             })
             let completedItem=document.querySelector(`.todo${id}`);
             completedItem.classList.add('complete');
+            console.log(completedItem);
             this._completedTodo=completedItem.textContent;
-            handler(this._completedTodo);
+            this._completedTodoArr=[...new Set(this._completedTodoArr)];
+            console.log(this._completedTodoArr)
+            handler(this._completedTodo,completedItem);
 
         }
     })

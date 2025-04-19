@@ -202,6 +202,7 @@ body {
 }
 
 .complete {
+  color: red;
   text-decoration: line-through;
 }
 /*# sourceMappingURL=index.ae6aadcc.css.map */

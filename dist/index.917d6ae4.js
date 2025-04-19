@@ -606,13 +606,17 @@ var _activeToDosViewJs = require("./View/activeToDosView.js");
 var _activeToDosViewJsDefault = parcelHelpers.interopDefault(_activeToDosViewJs);
 var _completedViewJs = require("./View/completedView.js");
 var _completedViewJsDefault = parcelHelpers.interopDefault(_completedViewJs);
+var _viewJs = require("./View/view.js");
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
 const allAddons = function(data) {
     _modelJs.todoList.all.push(data);
-    (0, _allToDOsViewJsDefault.default)._render(data);
+    _modelJs.todoList.active.push(data);
+    (0, _allToDOsViewJsDefault.default)._render(data, '', '', false);
 };
-const completedtodo = function(data) {
+const completedtodo = function(data, element) {
     if (_modelJs.todoList.completed.includes(data)) return;
     _modelJs.todoList.completed.push(data);
+    _modelJs.completedItems.set(element, data);
 };
 const activeToDos = function(data) {
     const active = _modelJs.todoList.all.filter((el)=>{
@@ -624,23 +628,40 @@ const activeToDos = function(data) {
     (0, _allToDOsViewJsDefault.default).updateRemainingToDOs(_modelJs.todoList.active);
 };
 const loadActiveToDos = function() {
-    if (_modelJs.todoList.active) _modelJs.todoList.active.forEach((el)=>{
-        (0, _allToDOsViewJsDefault.default)._render(el);
-    });
-    if (!_modelJs.todoList.active.length) _modelJs.todoList.all.forEach((el)=>{
-        (0, _allToDOsViewJsDefault.default)._render(el);
-    });
+    if (_modelJs.todoList.active) {
+        _modelJs.todoList.active.forEach((el)=>{
+            (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+        });
+        (0, _activeToDosViewJsDefault.default)._setCounters();
+    }
+    if (!_modelJs.todoList.active.length) {
+        _modelJs.todoList.all.forEach((el)=>{
+            (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+        });
+        (0, _activeToDosViewJsDefault.default)._setCounters();
+    }
+    console.log((0, _activeToDosViewJsDefault.default)._todolistID);
+    console.log((0, _activeToDosViewJsDefault.default)._todolistCrossID);
 };
 const loadAllToDos = function() {
-    if (_modelJs.todoList.all) _modelJs.todoList.all.forEach((el)=>{
-        _modelJs.todoList.completed.includes(el);
-        (0, _allToDOsViewJsDefault.default)._render(el);
-    });
+    if (_modelJs.todoList.all) {
+        _modelJs.todoList.active.forEach((el)=>{
+            (0, _activeToDosViewJsDefault.default)._render(el, '', "", false);
+        });
+        _modelJs.todoList.completed.forEach((el)=>{
+            (0, _completedViewJsDefault.default)._render(el, 'complete', "checked", true);
+        });
+        (0, _allToDOsViewJsDefault.default)._setCounters();
+    // completedView._setCounters();
+    }
 };
 const completedToDos = function() {
-    if (_modelJs.todoList.completed) _modelJs.todoList.completed.forEach((el)=>{
-        (0, _allToDOsViewJsDefault.default)._render(el);
-    });
+    if (_modelJs.todoList.completed) {
+        _modelJs.todoList.completed.forEach((el)=>{
+            (0, _completedViewJsDefault.default)._render(el, 'complete', "checked", true);
+        });
+        (0, _completedViewJsDefault.default)._setCounters();
+    }
 };
 const init = function() {
     (0, _allToDOsViewJsDefault.default).addHandlerUserInput(allAddons);
@@ -652,15 +673,17 @@ const init = function() {
 };
 init();
 
-},{"./model.js":"axYv4","./View/allToDOsView.js":"3EBHz","./View/crossView.js":"8rtih","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./View/activeToDosView.js":"6khcO","./View/completedView.js":"hNbFc"}],"axYv4":[function(require,module,exports,__globalThis) {
+},{"./model.js":"axYv4","./View/allToDOsView.js":"3EBHz","./View/crossView.js":"8rtih","./View/activeToDosView.js":"6khcO","./View/completedView.js":"hNbFc","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./View/view.js":"hkkRj"}],"axYv4":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "todoList", ()=>todoList);
+parcelHelpers.export(exports, "completedItems", ()=>completedItems);
 let todoList = {
     all: [],
     active: [],
     completed: []
 };
+let completedItems = new Map();
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports,__globalThis) {
 exports.interopDefault = function(a) {
@@ -701,11 +724,15 @@ var _iconCrossSvg = require("url:../images/icon-cross.svg");
 var _iconCrossSvgDefault = parcelHelpers.interopDefault(_iconCrossSvg);
 var _iconCheckSvg = require("url:../images/icon-check.svg");
 var _iconCheckSvgDefault = parcelHelpers.interopDefault(_iconCheckSvg);
+var _completedView = require("./completedView");
+var _completedViewDefault = parcelHelpers.interopDefault(_completedView);
+var _activeToDosView = require("./activeToDosView");
+var _activeToDosViewDefault = parcelHelpers.interopDefault(_activeToDosView);
+var _crossView = require("./crossView");
+var _crossViewDefault = parcelHelpers.interopDefault(_crossView);
 class AllToDo extends (0, _viewDefault.default) {
     _userInputtodo = document.querySelector('.input-todo');
     _itemNumbers = 1;
-    _todolistID = 1;
-    _todolistCrossID = 1;
     addHandlerUserInput(handler, active) {
         this._userInputtodo.addEventListener('keydown', (e)=>{
             if (e.key === 'Enter') {
@@ -729,6 +756,9 @@ class AllToDo extends (0, _viewDefault.default) {
         if (this._todocontainer.hasChildNodes) {
             let allEl = document.querySelector('.all');
             allEl.addEventListener('click', ()=>{
+                this._todolistID = 1;
+                this._todolistCrossID = 1;
+                this._todoNum = 1;
                 let stateEls = document.querySelectorAll('.stateEl');
                 stateEls.forEach((el)=>{
                     el.classList.remove('activestate');
@@ -739,13 +769,13 @@ class AllToDo extends (0, _viewDefault.default) {
             });
         }
     }
-    _generateMarkup(data) {
+    _generateMarkup(data, CName, flag, disableStatus) {
         return `<div class="list">
         <div class="todoname">
-<input type="checkbox" class="todocheck" name="" id="" data-id=${this._todolistCrossID++}>
+<input type="checkbox" class="todocheck" name="" id="" data-id=${this._todolistCrossID++} ${flag} ${disableStatus ? 'disabled' : ''}">
 <img src="${0, _iconCheckSvgDefault.default}" class="completedimg" alt="">
 <span class="checkbox"></span>
-<p class='todo${this._todolistID++} todo'>${data}</p>
+<p class='todo${this._todolistID++} todo ${CName}' data-number=${this._todoNum++}>${data}</p>
 </div>
 <img src="${0, _iconCrossSvgDefault.default}" class="cross" alt="" >
 </div>`;
@@ -753,20 +783,31 @@ class AllToDo extends (0, _viewDefault.default) {
 }
 exports.default = new AllToDo();
 
-},{"./view":"hkkRj","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hkkRj":[function(require,module,exports,__globalThis) {
+},{"./view":"hkkRj","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./completedView":"hNbFc","./activeToDosView":"6khcO","./crossView":"8rtih"}],"hkkRj":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 class View {
     _parentEl = document.querySelector('.todo-container');
     _todocontainer = document.querySelector('.todo-list');
     _data;
-    _render(data) {
+    _todolistID = 1;
+    _todolistCrossID = 1;
+    _todoNum = 1;
+    _render(data, className, checkStatus, disableStatus) {
         this._data = data;
-        let markup = this._generateMarkup(this._data);
+        let markup = this._generateMarkup(this._data, className, checkStatus, disableStatus);
         this._todocontainer.insertAdjacentHTML('afterbegin', markup);
     }
     _clear() {
         this._todocontainer.innerHTML = '';
+    }
+    _getElement(className) {
+        return document.querySelector(`${className}`);
+    }
+    _setCounters() {
+        this._todolistCrossID = 1;
+        this._todolistID = 1;
+        this._todoNum = 1;
     }
 }
 exports.default = View;
@@ -812,35 +853,56 @@ exports.getOrigin = getOrigin;
 },{}],"eNfcQ":[function(require,module,exports,__globalThis) {
 module.exports = require("281fb65e03982cbf").getBundleURL('jQFNt') + "icon-check.6ccd9270.svg" + "?" + Date.now();
 
-},{"281fb65e03982cbf":"lgJ39"}],"8rtih":[function(require,module,exports,__globalThis) {
+},{"281fb65e03982cbf":"lgJ39"}],"hNbFc":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _view = require("./view");
-var _viewDefault = parcelHelpers.interopDefault(_view);
 var _allToDOsView = require("./allToDOsView");
 var _allToDOsViewDefault = parcelHelpers.interopDefault(_allToDOsView);
-class CrossView extends (0, _viewDefault.default) {
-    _crossBtn = document.querySelector('.cross');
-    _completedTodo;
-    addHandlerClickCross(handler) {
-        this._todocontainer.addEventListener('click', (e)=>{
-            if (e.target.classList.contains('todocheck')) {
-                let id = e.target.getAttribute('data-id');
-                let alltodos = document.querySelectorAll('.todocheck');
-                alltodos.forEach((todo)=>{
-                    if (todo.checked) todo.setAttribute('disabled', true);
+var _view = require("./view");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+var _activeToDosView = require("./activeToDosView");
+var _activeToDosViewDefault = parcelHelpers.interopDefault(_activeToDosView);
+var _iconCrossSvg = require("url:../images/icon-cross.svg");
+var _iconCrossSvgDefault = parcelHelpers.interopDefault(_iconCrossSvg);
+var _iconCheckSvg = require("url:../images/icon-check.svg");
+var _iconCheckSvgDefault = parcelHelpers.interopDefault(_iconCheckSvg);
+class CompletedView extends (0, _viewDefault.default) {
+    renderCompletedTodos(handler) {
+        if (this._todocontainer.hasChildNodes) {
+            let completedEl = document.querySelector('.completed');
+            completedEl.addEventListener('click', ()=>{
+                this._todolistID = 1;
+                this._todolistCrossID = 1;
+                this._todoNum = 1;
+                let completedToDoEls = document.querySelectorAll('.todo');
+                completedToDoEls.forEach((el)=>{
+                    console.log(el.classList);
                 });
-                let completedItem = document.querySelector(`.todo${id}`);
-                completedItem.classList.add('complete');
-                this._completedTodo = completedItem.textContent;
-                handler(this._completedTodo);
-            }
-        });
+                let stateEls = document.querySelectorAll('.stateEl');
+                stateEls.forEach((el)=>{
+                    el.classList.remove('activestate');
+                });
+                completedEl.classList.add('activestate');
+                this._clear();
+                handler();
+            });
+        }
+    }
+    _generateMarkup(data, CName, checkStaus, disableStatus) {
+        return `<div class="list">
+            <div class="todoname">
+    <input type="checkbox" class="todocheck" name="" id="" data-id=${this._todolistCrossID++} ${checkStaus} ${disableStatus ? 'disabled' : ''}>
+    <img src="${0, _iconCheckSvgDefault.default}" class="completedimg" alt="">
+    <span class="checkbox"></span>
+    <p class='todo${this._todolistID++} todo ${CName}' data-number=${this._todoNum++}>${data}</p>
+    </div>
+    <img src="${0, _iconCrossSvgDefault.default}" class="cross" alt="" >
+    </div>`;
     }
 }
-exports.default = new CrossView();
+exports.default = new CompletedView();
 
-},{"./view":"hkkRj","./allToDOsView":"3EBHz","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6khcO":[function(require,module,exports,__globalThis) {
+},{"./allToDOsView":"3EBHz","./view":"hkkRj","./activeToDosView":"6khcO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ"}],"6khcO":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _crossView = require("./crossView");
@@ -849,8 +911,14 @@ var _allToDOsView = require("./allToDOsView");
 var _allToDOsViewDefault = parcelHelpers.interopDefault(_allToDOsView);
 var _view = require("./view");
 var _viewDefault = parcelHelpers.interopDefault(_view);
+var _iconCrossSvg = require("url:../images/icon-cross.svg");
+var _iconCrossSvgDefault = parcelHelpers.interopDefault(_iconCrossSvg);
+var _iconCheckSvg = require("url:../images/icon-check.svg");
+var _iconCheckSvgDefault = parcelHelpers.interopDefault(_iconCheckSvg);
 class ActiveTodo extends (0, _viewDefault.default) {
     _activeTodo = [];
+    _todolistID = 1;
+    _todolistCrossID = 1;
     addHandlerActiveTodo(handler) {
         this._todocontainer.addEventListener('click', (e)=>{
             if (e.target.classList.contains('todocheck')) {
@@ -875,36 +943,57 @@ class ActiveTodo extends (0, _viewDefault.default) {
             });
         }
     }
+    _generateMarkup(data, cName, checkStatus, disableStatus) {
+        return `<div class="list">
+        <div class="todoname">
+<input type="checkbox" class="todocheck" name="" id="" data-id=${this._todolistCrossID++} ${checkStatus} ${disableStatus ? 'disabled' : ''}>
+<img src="${0, _iconCheckSvgDefault.default}" class="completedimg" alt="">
+<span class="checkbox"></span>
+<p class='todo${this._todolistID++} todo ${cName}' data-number=${this._todoNum++}>${data}</p>
+</div>
+<img src="${0, _iconCrossSvgDefault.default}" class="cross" alt="" >
+</div>`;
+    }
 }
 exports.default = new ActiveTodo();
 
-},{"./crossView":"8rtih","./allToDOsView":"3EBHz","./view":"hkkRj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hNbFc":[function(require,module,exports,__globalThis) {
+},{"./crossView":"8rtih","./allToDOsView":"3EBHz","./view":"hkkRj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ"}],"8rtih":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _allToDOsView = require("./allToDOsView");
-var _allToDOsViewDefault = parcelHelpers.interopDefault(_allToDOsView);
 var _view = require("./view");
 var _viewDefault = parcelHelpers.interopDefault(_view);
-var _activeToDosView = require("./activeToDosView");
-var _activeToDosViewDefault = parcelHelpers.interopDefault(_activeToDosView);
-class CompletedView extends (0, _viewDefault.default) {
-    renderCompletedTodos(handler) {
-        if (this._todocontainer.hasChildNodes) {
-            let completedEl = document.querySelector('.completed');
-            completedEl.addEventListener('click', ()=>{
-                let stateEls = document.querySelectorAll('.stateEl');
-                stateEls.forEach((el)=>{
-                    el.classList.remove('activestate');
+var _allToDOsView = require("./allToDOsView");
+var _allToDOsViewDefault = parcelHelpers.interopDefault(_allToDOsView);
+class CrossView extends (0, _viewDefault.default) {
+    _crossBtn = document.querySelector('.cross');
+    _completedTodo;
+    _completedTodoArr = [];
+    addHandlerClickCross(handler) {
+        this._todocontainer.addEventListener('click', (e)=>{
+            if (e.target.classList.contains('todocheck')) {
+                let id = e.target.getAttribute('data-id');
+                let alltodos = document.querySelectorAll('.todocheck');
+                alltodos.forEach((todo)=>{
+                    if (todo.checked) {
+                        todo.setAttribute('disabled', true);
+                        this._completedTodoArr.push(todo.getAttribute('data-id'));
+                    }
                 });
-                completedEl.classList.add('activestate');
-                this._clear();
-                handler();
-            });
-        }
+                let completedItem = document.querySelector(`.todo${id}`);
+                completedItem.classList.add('complete');
+                console.log(completedItem);
+                this._completedTodo = completedItem.textContent;
+                this._completedTodoArr = [
+                    ...new Set(this._completedTodoArr)
+                ];
+                console.log(this._completedTodoArr);
+                handler(this._completedTodo, completedItem);
+            }
+        });
     }
 }
-exports.default = new CompletedView();
+exports.default = new CrossView();
 
-},{"./allToDOsView":"3EBHz","./view":"hkkRj","./activeToDosView":"6khcO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["8zVio","8noxN"], "8noxN", "parcelRequire94c2")
+},{"./view":"hkkRj","./allToDOsView":"3EBHz","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["8zVio","8noxN"], "8noxN", "parcelRequire94c2")
 
 //# sourceMappingURL=index.917d6ae4.js.map

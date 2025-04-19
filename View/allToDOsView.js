@@ -1,11 +1,12 @@
 import View from "./view";
 import cross from 'url:../images/icon-cross.svg';
 import tick from 'url:../images/icon-check.svg';
+import completedView from "./completedView";
+import activeToDosView from "./activeToDosView";
+import crossView from "./crossView";
 class AllToDo extends View{
 _userInputtodo=document.querySelector('.input-todo')
 _itemNumbers=1;
-_todolistID=1;
-_todolistCrossID=1;
 
 addHandlerUserInput(handler,active){
     this._userInputtodo.addEventListener('keydown',(e)=>{
@@ -30,29 +31,34 @@ updateRemainingToDOs(arr){
 }
 renderAllTodos(handler){
     if(this._todocontainer.hasChildNodes){
-        let allEl=document.querySelector('.all');
+       
+        let allEl=document.querySelector('.all'); 
+    
         allEl.addEventListener('click',()=>{
-            let stateEls=document.querySelectorAll('.stateEl')
+            this._todolistID=1;
+            this._todolistCrossID=1;
+            this._todoNum=1;
+            let stateEls=document.querySelectorAll('.stateEl');
+            
             stateEls.forEach(el=>{
                 el.classList.remove('activestate');
 
             })
             allEl.classList.add('activestate');
             this._clear();
-            
-            handler()
+            handler();
         })
 
     }
 
 }
-_generateMarkup(data){
+_generateMarkup(data,CName,flag,disableStatus){
 return `<div class="list">
         <div class="todoname">
-<input type="checkbox" class="todocheck" name="" id="" data-id=${this._todolistCrossID++}>
+<input type="checkbox" class="todocheck" name="" id="" data-id=${this._todolistCrossID++} ${flag} ${disableStatus?'disabled':''}">
 <img src="${tick}" class="completedimg" alt="">
 <span class="checkbox"></span>
-<p class='todo${this._todolistID++} todo'>${data}</p>
+<p class='todo${this._todolistID++} todo ${CName}' data-number=${this._todoNum++}>${data}</p>
 </div>
 <img src="${cross}" class="cross" alt="" >
 </div>`

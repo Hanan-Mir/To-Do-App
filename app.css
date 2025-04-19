@@ -183,4 +183,5 @@ border-radius: 50%;
 }
 .complete{
     text-decoration: line-through;
+    color:red;
 }

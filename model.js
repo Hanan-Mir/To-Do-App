@@ -4,3 +4,4 @@ export let todoList={
     completed:[]
     
 }
+export let completedItems=new Map();

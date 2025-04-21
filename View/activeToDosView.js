@@ -26,6 +26,7 @@ renderActiveTodos(handler){
         if(this._todocontainer.hasChildNodes){
             let activeEl=document.querySelector('.active');
             activeEl.addEventListener('click',()=>{
+                this._todoInput.disabled=false;
                 let stateEls=document.querySelectorAll('.stateEl')
                 stateEls.forEach(el=>{
                     el.classList.remove('activestate');
@@ -48,11 +49,9 @@ return `<div class="list">
 <span class="checkbox"></span>
 <p class='todo${this._todolistID++} todo ${cName}' data-number=${this._todoNum++}>${data}</p>
 </div>
-<img src="${cross}" class="cross" alt="" >
+<img src="${cross}" class="cross" data-deleteID=${this._todoDeleteID++} alt="" >
 </div>`
 }
-
-
 
 
 }

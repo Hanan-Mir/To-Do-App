@@ -84,6 +84,7 @@ body {
   outline: none;
   flex: 1;
   font-size: 1.2rem;
+  font-weight: 400;
   position: absolute;
   left: 10%;
 }
@@ -106,10 +107,10 @@ body {
 }
 
 .todoname p {
-  color: var(--primary-vLight-grey);
+  color: #777a92;
   margin-left: 10%;
   font-size: 1.2rem;
-  font-weight: 200;
+  font-weight: 400;
 }
 
 .list {
@@ -204,5 +205,73 @@ body {
 .complete {
   color: red;
   text-decoration: line-through;
+}
+
+#mobile {
+  display: none;
+}
+
+#desktop {
+  display: block;
+}
+
+@media only screen and (width <= 400px) {
+  #desktop {
+    display: none;
+  }
+
+  #mobile {
+    display: block;
+  }
+
+  .assets-container h1 {
+    letter-spacing: .5rem;
+    font-size: 1.8rem;
+    top: 10%;
+    left: 5%;
+  }
+
+  .mode {
+    top: 20%;
+    left: 86%;
+  }
+
+  .todo-inputtext {
+    border-radius: 5px;
+    width: 80%;
+    height: 15%;
+    top: 50%;
+    left: 10%;
+  }
+
+  .dropP {
+    bottom: 0%;
+    left: 20%;
+  }
+
+  .todoname {
+    z-index: 3;
+  }
+
+  .todo-container {
+    width: 90%;
+    left: 6%;
+  }
+
+  .todo-bottom {
+    position: relative;
+  }
+
+  .state {
+    background-color: var(--primary-vDark-DesatBlue);
+    width: 100%;
+    position: absolute;
+    bottom: -140%;
+    left: 0%;
+  }
+
+  .completedimg {
+    left: 2%;
+  }
 }
 /*# sourceMappingURL=index.ae6aadcc.css.map */

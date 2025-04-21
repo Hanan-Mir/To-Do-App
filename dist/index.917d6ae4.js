@@ -608,10 +608,23 @@ var _completedViewJs = require("./View/completedView.js");
 var _completedViewJsDefault = parcelHelpers.interopDefault(_completedViewJs);
 var _viewJs = require("./View/view.js");
 var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+var _changingModeViewJs = require("./View/changingModeView.js");
+var _changingModeViewJsDefault = parcelHelpers.interopDefault(_changingModeViewJs);
+var _dragAndDropViewJs = require("./View/dragAndDropView.js");
+var _dragAndDropViewJsDefault = parcelHelpers.interopDefault(_dragAndDropViewJs);
 const allAddons = function(data) {
     _modelJs.todoList.all.push(data);
     _modelJs.todoList.active.push(data);
-    (0, _allToDOsViewJsDefault.default)._render(data, '', '', false);
+    if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+        (0, _allToDOsViewJsDefault.default)._render(data, '', '', false);
+        (0, _allToDOsViewJsDefault.default).updateRemainingToDOs(_modelJs.todoList.all);
+        (0, _changingModeViewJsDefault.default).lightMode();
+    }
+    if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+        (0, _allToDOsViewJsDefault.default)._render(data, '', '', false);
+        (0, _allToDOsViewJsDefault.default).updateRemainingToDOs(_modelJs.todoList.all);
+        (0, _changingModeViewJsDefault.default).nightMode();
+    }
 };
 const completedtodo = function(data, element) {
     if (_modelJs.todoList.completed.includes(data)) return;
@@ -630,38 +643,131 @@ const activeToDos = function(data) {
 const loadActiveToDos = function() {
     if (_modelJs.todoList.active) {
         _modelJs.todoList.active.forEach((el)=>{
-            (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+            if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+                (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+                (0, _changingModeViewJsDefault.default).lightMode();
+            }
+            if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+                (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+                (0, _changingModeViewJsDefault.default).nightMode();
+            }
         });
         (0, _activeToDosViewJsDefault.default)._setCounters();
     }
     if (!_modelJs.todoList.active.length) {
-        _modelJs.todoList.all.forEach((el)=>{
-            (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+        _modelJs.todoList.active.forEach((el)=>{
+            if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+                (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+                (0, _changingModeViewJsDefault.default).lightMode();
+            }
+            if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+                (0, _activeToDosViewJsDefault.default)._render(el, '', '', false);
+                (0, _changingModeViewJsDefault.default).nightMode();
+            }
         });
         (0, _activeToDosViewJsDefault.default)._setCounters();
     }
-    console.log((0, _activeToDosViewJsDefault.default)._todolistID);
-    console.log((0, _activeToDosViewJsDefault.default)._todolistCrossID);
+    (0, _allToDOsViewJsDefault.default).updateRemainingToDOs(_modelJs.todoList.active);
 };
 const loadAllToDos = function() {
     if (_modelJs.todoList.all) {
-        _modelJs.todoList.active.forEach((el)=>{
-            (0, _activeToDosViewJsDefault.default)._render(el, '', "", false);
-        });
-        _modelJs.todoList.completed.forEach((el)=>{
-            (0, _completedViewJsDefault.default)._render(el, 'complete', "checked", true);
-        });
         (0, _allToDOsViewJsDefault.default)._setCounters();
-    // completedView._setCounters();
+        _modelJs.todoList.all.forEach((item)=>{
+            if (_modelJs.todoList.completed.includes(item)) {
+                if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+                    (0, _allToDOsViewJsDefault.default)._render(item, 'complete', 'checked', true);
+                    (0, _changingModeViewJsDefault.default).lightMode();
+                }
+                if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+                    (0, _allToDOsViewJsDefault.default)._render(item, 'complete', 'checked', true);
+                    (0, _changingModeViewJsDefault.default).nightMode();
+                }
+            } else {
+                if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+                    (0, _allToDOsViewJsDefault.default)._render(item, '', '', false);
+                    (0, _changingModeViewJsDefault.default).lightMode();
+                }
+                if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+                    (0, _allToDOsViewJsDefault.default)._render(item, '', '', false);
+                    (0, _changingModeViewJsDefault.default).nightMode();
+                }
+            }
+        });
     }
 };
 const completedToDos = function() {
     if (_modelJs.todoList.completed) {
         _modelJs.todoList.completed.forEach((el)=>{
-            (0, _completedViewJsDefault.default)._render(el, 'complete', "checked", true);
+            if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+                (0, _completedViewJsDefault.default)._render(el, 'complete', "checked", true);
+                (0, _changingModeViewJsDefault.default).lightMode();
+            }
+            if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+                (0, _completedViewJsDefault.default)._render(el, 'complete', "checked", true);
+                (0, _changingModeViewJsDefault.default).nightMode();
+            }
         });
         (0, _completedViewJsDefault.default)._setCounters();
     }
+};
+const clearCompleted = function() {
+    if (_modelJs.todoList.completed) {
+        _modelJs.todoList.completed.forEach((el)=>{
+            let index = _modelJs.todoList.all.indexOf(el);
+            _modelJs.todoList.all.splice(index, 1);
+        });
+        let length = _modelJs.todoList.completed.length;
+        for(let i = 0; i < length; i++)_modelJs.todoList.completed.pop();
+        console.log(_modelJs.todoList.all);
+    }
+};
+const deleteCompleteElement = function(el) {
+    let indexInCompletedArr = _modelJs.todoList.completed.indexOf(el);
+    let indexInAllArr = _modelJs.todoList.all.indexOf(el);
+    _modelJs.todoList.completed.splice(indexInCompletedArr, 1);
+    _modelJs.todoList.all.splice(indexInAllArr, 1);
+    _modelJs.todoList.active.forEach((item)=>{
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') //  activeToDosView._render(item,'','',false);
+        (0, _changingModeViewJsDefault.default).lightMode();
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') // activeToDosView._render(item,'','',false);
+        (0, _changingModeViewJsDefault.default).nightMode();
+    });
+    _modelJs.todoList.completed.forEach((item)=>{
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+            (0, _completedViewJsDefault.default)._render(item, 'complete', 'checked', true);
+            (0, _changingModeViewJsDefault.default).lightMode();
+        }
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+            (0, _completedViewJsDefault.default)._render(item, 'complete', 'checked', true);
+            (0, _changingModeViewJsDefault.default).nightMode();
+        }
+    });
+};
+const deleteActiveElement = function(el) {
+    let indexInActiveArr = _modelJs.todoList.active.indexOf(el);
+    let indexInAllArr = _modelJs.todoList.all.indexOf(el);
+    _modelJs.todoList.active.splice(indexInActiveArr, 1);
+    _modelJs.todoList.all.splice(indexInAllArr, 1);
+    _modelJs.todoList.active.forEach((item)=>{
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') {
+            (0, _activeToDosViewJsDefault.default)._render(item, '', '', false);
+            (0, _allToDOsViewJsDefault.default).updateRemainingToDOs(_modelJs.todoList.active);
+            (0, _changingModeViewJsDefault.default).lightMode();
+        }
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') {
+            (0, _activeToDosViewJsDefault.default)._render(item, '', '', false);
+            (0, _allToDOsViewJsDefault.default).updateRemainingToDOs(_modelJs.todoList.active);
+            (0, _changingModeViewJsDefault.default).nightMode();
+        }
+    });
+    console.log(_modelJs.todoList.active);
+    console.log(_modelJs.todoList.all);
+    _modelJs.todoList.completed.forEach((item)=>{
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'sun') //completedView._render(item,'complete','checked',true);
+        (0, _changingModeViewJsDefault.default).lightMode();
+        if ((0, _changingModeViewJsDefault.default)._curmode === 'moon') //completedView._render(item,'complete','checked',true);
+        (0, _changingModeViewJsDefault.default).nightMode();
+    });
 };
 const init = function() {
     (0, _allToDOsViewJsDefault.default).addHandlerUserInput(allAddons);
@@ -670,10 +776,16 @@ const init = function() {
     (0, _activeToDosViewJsDefault.default).renderActiveTodos(loadActiveToDos);
     (0, _allToDOsViewJsDefault.default).renderAllTodos(loadAllToDos);
     (0, _completedViewJsDefault.default).renderCompletedTodos(completedToDos);
+    (0, _completedViewJsDefault.default)._clearCompletedView(clearCompleted);
+    (0, _allToDOsViewJsDefault.default).onClickDeleteIcon(deleteActiveElement, deleteCompleteElement);
+    // activeToDosView.onClickDeleteIcon(deleteActiveElement,deleteCompleteElement);
+    // completedView.onClickDeleteIcon(deleteActiveElement,deleteCompleteElement);
+    (0, _changingModeViewJsDefault.default).addHandlerChangeMode();
+    (0, _dragAndDropViewJsDefault.default).addHandlerDragAndDrop();
 };
 init();
 
-},{"./model.js":"axYv4","./View/allToDOsView.js":"3EBHz","./View/crossView.js":"8rtih","./View/activeToDosView.js":"6khcO","./View/completedView.js":"hNbFc","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./View/view.js":"hkkRj"}],"axYv4":[function(require,module,exports,__globalThis) {
+},{"./model.js":"axYv4","./View/allToDOsView.js":"3EBHz","./View/crossView.js":"8rtih","./View/activeToDosView.js":"6khcO","./View/completedView.js":"hNbFc","./View/view.js":"hkkRj","./View/changingModeView.js":"dn766","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./View/dragAndDropView.js":"kh145"}],"axYv4":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "todoList", ()=>todoList);
@@ -731,34 +843,38 @@ var _activeToDosViewDefault = parcelHelpers.interopDefault(_activeToDosView);
 var _crossView = require("./crossView");
 var _crossViewDefault = parcelHelpers.interopDefault(_crossView);
 class AllToDo extends (0, _viewDefault.default) {
-    _userInputtodo = document.querySelector('.input-todo');
+    _userInputtodo = document.querySelectorAll('.input-todo');
     _itemNumbers = 1;
     addHandlerUserInput(handler, active) {
-        this._userInputtodo.addEventListener('keydown', (e)=>{
-            if (e.key === 'Enter') {
-                this._parentEl.classList.remove('hide');
-                handler(this._userInputtodo.value);
-                this._userInputtodo.value = '';
-                if (this._todocontainer.hasChildNodes) {
-                    let itemsLeft = document.querySelector('.itemsLeft');
-                    itemsLeft.textContent = `${this._itemNumbers++} items left`;
+        this._userInputtodo.forEach((input)=>{
+            input.addEventListener('keydown', (e)=>{
+                if (e.key === 'Enter') {
+                    this._parentEl.forEach((el)=>{
+                        el.classList.remove('hide');
+                    });
+                    handler(input.value);
+                    input.value = '';
+                    this._todocontainer.hasChildNodes;
                 }
-            }
+            });
         });
     }
     updateRemainingToDOs(arr) {
         if (this._todocontainer.hasChildNodes) {
             let itemsLeft = document.querySelector('.itemsLeft');
-            itemsLeft.textContent = `${arr.length} items left`;
+            console.log(arr);
+            itemsLeft.textContent = `${arr.length ? arr.length : 0} items left`;
         }
     }
     renderAllTodos(handler) {
         if (this._todocontainer.hasChildNodes) {
             let allEl = document.querySelector('.all');
             allEl.addEventListener('click', ()=>{
+                this._todoInput.disabled = false;
                 this._todolistID = 1;
                 this._todolistCrossID = 1;
                 this._todoNum = 1;
+                this._todoDeleteID = 1;
                 let stateEls = document.querySelectorAll('.stateEl');
                 stateEls.forEach((el)=>{
                     el.classList.remove('activestate');
@@ -777,22 +893,24 @@ class AllToDo extends (0, _viewDefault.default) {
 <span class="checkbox"></span>
 <p class='todo${this._todolistID++} todo ${CName}' data-number=${this._todoNum++}>${data}</p>
 </div>
-<img src="${0, _iconCrossSvgDefault.default}" class="cross" alt="" >
+<img src="${0, _iconCrossSvgDefault.default}" class="cross" data-deleteID=${this._todoDeleteID++} alt="" >
 </div>`;
     }
 }
 exports.default = new AllToDo();
 
-},{"./view":"hkkRj","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./completedView":"hNbFc","./activeToDosView":"6khcO","./crossView":"8rtih"}],"hkkRj":[function(require,module,exports,__globalThis) {
+},{"./view":"hkkRj","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ","./completedView":"hNbFc","./activeToDosView":"6khcO","./crossView":"8rtih","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hkkRj":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 class View {
-    _parentEl = document.querySelector('.todo-container');
+    _parentEl = document.querySelectorAll('.todo-container');
     _todocontainer = document.querySelector('.todo-list');
+    _todoInput = document.querySelector('.input-todo');
     _data;
     _todolistID = 1;
     _todolistCrossID = 1;
     _todoNum = 1;
+    _todoDeleteID = 1;
     _render(data, className, checkStatus, disableStatus) {
         this._data = data;
         let markup = this._generateMarkup(this._data, className, checkStatus, disableStatus);
@@ -808,6 +926,25 @@ class View {
         this._todolistCrossID = 1;
         this._todolistID = 1;
         this._todoNum = 1;
+        this._todoDeleteID = 1;
+    }
+    onClickDeleteIcon(handler1, handler2) {
+        if (this._todocontainer.hasChildNodes) this._todocontainer.addEventListener('click', (e)=>{
+            if (e.target.classList.contains('cross')) {
+                let elID = e.target.getAttribute('data-deleteID');
+                console.log(elID);
+                let todoElement = document.querySelector(`.todo${elID}`);
+                console.log(todoElement);
+                if (!todoElement.classList.contains('complete')) {
+                    this._clear();
+                    handler1(todoElement.textContent);
+                }
+                if (todoElement.classList.contains('complete')) {
+                    this._clear();
+                    handler2(todoElement.textContent);
+                }
+            }
+        });
     }
 }
 exports.default = View;
@@ -871,9 +1008,11 @@ class CompletedView extends (0, _viewDefault.default) {
         if (this._todocontainer.hasChildNodes) {
             let completedEl = document.querySelector('.completed');
             completedEl.addEventListener('click', ()=>{
+                this._todoInput.disabled = true;
                 this._todolistID = 1;
                 this._todolistCrossID = 1;
                 this._todoNum = 1;
+                this._todoDeleteID = 1;
                 let completedToDoEls = document.querySelectorAll('.todo');
                 completedToDoEls.forEach((el)=>{
                     console.log(el.classList);
@@ -896,13 +1035,21 @@ class CompletedView extends (0, _viewDefault.default) {
     <span class="checkbox"></span>
     <p class='todo${this._todolistID++} todo ${CName}' data-number=${this._todoNum++}>${data}</p>
     </div>
-    <img src="${0, _iconCrossSvgDefault.default}" class="cross" alt="" >
+    <img src="${0, _iconCrossSvgDefault.default}" class="cross" data-deleteID=${this._todoDeleteID++} alt="" >
     </div>`;
+    }
+    _clearCompletedView(handler) {
+        if (this._todocontainer.hasChildNodes) {
+            let clearEl = document.querySelector('.clearcomp');
+            clearEl.addEventListener('click', ()=>{
+                handler();
+            });
+        }
     }
 }
 exports.default = new CompletedView();
 
-},{"./allToDOsView":"3EBHz","./view":"hkkRj","./activeToDosView":"6khcO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ"}],"6khcO":[function(require,module,exports,__globalThis) {
+},{"./allToDOsView":"3EBHz","./view":"hkkRj","./activeToDosView":"6khcO","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6khcO":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _crossView = require("./crossView");
@@ -933,6 +1080,7 @@ class ActiveTodo extends (0, _viewDefault.default) {
         if (this._todocontainer.hasChildNodes) {
             let activeEl = document.querySelector('.active');
             activeEl.addEventListener('click', ()=>{
+                this._todoInput.disabled = false;
                 let stateEls = document.querySelectorAll('.stateEl');
                 stateEls.forEach((el)=>{
                     el.classList.remove('activestate');
@@ -951,13 +1099,13 @@ class ActiveTodo extends (0, _viewDefault.default) {
 <span class="checkbox"></span>
 <p class='todo${this._todolistID++} todo ${cName}' data-number=${this._todoNum++}>${data}</p>
 </div>
-<img src="${0, _iconCrossSvgDefault.default}" class="cross" alt="" >
+<img src="${0, _iconCrossSvgDefault.default}" class="cross" data-deleteID=${this._todoDeleteID++} alt="" >
 </div>`;
     }
 }
 exports.default = new ActiveTodo();
 
-},{"./crossView":"8rtih","./allToDOsView":"3EBHz","./view":"hkkRj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ"}],"8rtih":[function(require,module,exports,__globalThis) {
+},{"./crossView":"8rtih","./allToDOsView":"3EBHz","./view":"hkkRj","url:../images/icon-cross.svg":"5zjlu","url:../images/icon-check.svg":"eNfcQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8rtih":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _view = require("./view");
@@ -973,8 +1121,10 @@ class CrossView extends (0, _viewDefault.default) {
             if (e.target.classList.contains('todocheck')) {
                 let id = e.target.getAttribute('data-id');
                 let alltodos = document.querySelectorAll('.todocheck');
+                console.log(id);
                 alltodos.forEach((todo)=>{
                     if (todo.checked) {
+                        console.log("hello");
                         todo.setAttribute('disabled', true);
                         this._completedTodoArr.push(todo.getAttribute('data-id'));
                     }
@@ -993,6 +1143,181 @@ class CrossView extends (0, _viewDefault.default) {
     }
 }
 exports.default = new CrossView();
+
+},{"./view":"hkkRj","./allToDOsView":"3EBHz","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dn766":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _view = require("./view");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+var _bgDesktopLightJpg = require("url:../images/bg-desktop-light.jpg");
+var _bgDesktopLightJpgDefault = parcelHelpers.interopDefault(_bgDesktopLightJpg);
+var _bgMobileLightJpg = require("url:../images/bg-mobile-light.jpg");
+var _bgMobileLightJpgDefault = parcelHelpers.interopDefault(_bgMobileLightJpg);
+var _bgMobileDarkJpg = require("url:../images/bg-mobile-dark.jpg");
+var _bgMobileDarkJpgDefault = parcelHelpers.interopDefault(_bgMobileDarkJpg);
+var _bgDesktopDarkJpg = require("url:../images/bg-desktop-dark.jpg");
+var _bgDesktopDarkJpgDefault = parcelHelpers.interopDefault(_bgDesktopDarkJpg);
+var _iconMoonSvg = require("url:../images/icon-moon.svg");
+var _iconMoonSvgDefault = parcelHelpers.interopDefault(_iconMoonSvg);
+var _iconSunSvg = require("url:../images/icon-sun.svg");
+var _iconSunSvgDefault = parcelHelpers.interopDefault(_iconSunSvg);
+class ChangingMode extends (0, _viewDefault.default) {
+    _mode = document.querySelectorAll('.mode');
+    _curmode = 'moon';
+    addHandlerChangeMode() {
+        this._mode.forEach((el)=>{
+            console.log(el);
+            el.addEventListener('click', (e)=>{
+                if (e.target.classList.contains('sun')) {
+                    this._curmode = "sun";
+                    let bgImg = document.querySelector('.bg-img');
+                    let mobileImg = document.querySelector('.mobileImage');
+                    let inputBar = document.querySelectorAll('.todo-inputtext');
+                    let inputText = document.querySelectorAll('.input-todo');
+                    bgImg.src = (0, _bgDesktopLightJpgDefault.default);
+                    mobileImg.src = (0, _bgMobileLightJpgDefault.default);
+                    this._mode.forEach((element)=>{
+                        element.src = (0, _iconMoonSvgDefault.default);
+                    });
+                    console.log(el.src);
+                    el.classList.remove('sun');
+                    el.classList.add('moon');
+                    document.body.style.backgroundColor = 'hsl(0, 0%, 98%)';
+                    inputBar.forEach((input)=>{
+                        input.style.backgroundColor = 'hsl(0, 0%, 98%)';
+                    });
+                    inputText.forEach((input)=>{
+                        input.style.backgroundColor = 'hsl(0, 0%, 98%)';
+                        input.style.color = 'hsl(237, 14%, 26%)';
+                    });
+                    this.lightMode();
+                    return;
+                }
+                if (e.target.classList.contains('moon')) {
+                    this._curmode = "moon";
+                    this._mode.forEach((element)=>{
+                        element.src = (0, _iconSunSvgDefault.default);
+                    });
+                    let bgImg = document.querySelector('.bg-img');
+                    let mobileImg = document.querySelector('.mobileImage');
+                    bgImg.src = (0, _bgDesktopDarkJpgDefault.default);
+                    mobileImg.src = (0, _bgMobileDarkJpgDefault.default);
+                    el.classList.add('sun');
+                    el.classList.remove('moon');
+                    let inputBar = document.querySelectorAll('.todo-inputtext');
+                    let inputText = document.querySelectorAll('.input-todo');
+                    document.body.style.backgroundColor = 'hsl(237, 14%, 26%)';
+                    inputBar.forEach((input)=>{
+                        input.style.backgroundColor = 'var(--primary-vDark-DesatBlue)';
+                    });
+                    inputText.forEach((input)=>{
+                        input.style.backgroundColor = 'var(--primary-vDark-DesatBlue)';
+                        input.style.color = 'hsl(0, 0%, 98%)';
+                    });
+                    this.nightMode();
+                    return;
+                }
+            });
+        });
+    }
+    lightMode() {
+        if (this._todocontainer.hasChildNodes) {
+            let stateEL = document.querySelectorAll('.state');
+            let todobottom = document.querySelector('.todo-bottom');
+            let todoList = document.querySelectorAll('.list');
+            let todoName = document.querySelectorAll('.todo');
+            let todoContainer = document.querySelector('.todo-container');
+            todoContainer.style.backgroundColor = 'hsl(236, 33%, 92%)';
+            todoList.forEach((list)=>{
+                list.style.backgroundColor = 'hsl(236, 33%, 92%)';
+            });
+            todoName.forEach((todo)=>{
+                todo.style.color = 'hsl(235, 19%, 35%)';
+                todo.style.fontWeight = '400';
+            });
+            stateEL.forEach((el)=>{
+                el.style.backgroundColor = 'hsl(236, 33%, 92%)';
+            });
+            todobottom.style.backgroundColor = 'hsl(236, 33%, 92%)';
+        }
+    }
+    nightMode() {
+        if (this._todocontainer.hasChildNodes) {
+            let todobottom = document.querySelector('.todo-bottom');
+            let todoList = document.querySelectorAll('.list');
+            let todoName = document.querySelectorAll('.todo');
+            let todoContainer = document.querySelector('.todo-container');
+            let stateEL = document.querySelectorAll('.state');
+            todoContainer.style.backgroundColor = 'var(--primary-vDark-grayishBlue)';
+            todoList.forEach((list)=>{
+                list.style.backgroundColor = 'var(--primary-vDark-DesatBlue)';
+            });
+            todoName.forEach((todo)=>{
+                todo.style.color = 'hsl(234, 11%, 52%)';
+                todo.style.fontWeight = '400';
+            });
+            stateEL.forEach((el)=>{
+                el.style.backgroundColor = 'var(--primary-vDark-DesatBlue)';
+            });
+            todobottom.style.color = 'var(--primary-vDark-grayishBlue)';
+            todobottom.style.backgroundColor = 'var(--primary-vDark-DesatBlue)';
+        }
+    }
+}
+exports.default = new ChangingMode();
+
+},{"./view":"hkkRj","url:../images/bg-desktop-light.jpg":"cesuy","url:../images/bg-desktop-dark.jpg":"g7xfy","url:../images/icon-moon.svg":"fH0MI","url:../images/icon-sun.svg":"fO3Te","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","url:../images/bg-mobile-light.jpg":"btUB5","url:../images/bg-mobile-dark.jpg":"jzsjf"}],"cesuy":[function(require,module,exports,__globalThis) {
+module.exports = require("67c45d318029b80e").getBundleURL('jQFNt') + "bg-desktop-light.b54eea9a.jpg" + "?" + Date.now();
+
+},{"67c45d318029b80e":"lgJ39"}],"g7xfy":[function(require,module,exports,__globalThis) {
+module.exports = require("78e48c48c206587").getBundleURL('jQFNt') + "bg-desktop-dark.6c675a9f.jpg" + "?" + Date.now();
+
+},{"78e48c48c206587":"lgJ39"}],"fH0MI":[function(require,module,exports,__globalThis) {
+module.exports = require("6219c5aada424eef").getBundleURL('jQFNt') + "icon-moon.1ebe0023.svg" + "?" + Date.now();
+
+},{"6219c5aada424eef":"lgJ39"}],"fO3Te":[function(require,module,exports,__globalThis) {
+module.exports = require("a7f317e2d25a7f2c").getBundleURL('jQFNt') + "icon-sun.88ccb7d1.svg" + "?" + Date.now();
+
+},{"a7f317e2d25a7f2c":"lgJ39"}],"btUB5":[function(require,module,exports,__globalThis) {
+module.exports = require("b84eeb32269d229b").getBundleURL('jQFNt') + "bg-mobile-light.b4961e34.jpg" + "?" + Date.now();
+
+},{"b84eeb32269d229b":"lgJ39"}],"jzsjf":[function(require,module,exports,__globalThis) {
+module.exports = require("21993c4fd14bbb5f").getBundleURL('jQFNt') + "bg-mobile-dark.3a6c0f66.jpg" + "?" + Date.now();
+
+},{"21993c4fd14bbb5f":"lgJ39"}],"kh145":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _view = require("./view");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+var _allToDOsView = require("./allToDOsView");
+var _allToDOsViewDefault = parcelHelpers.interopDefault(_allToDOsView);
+class DragAndDrop extends (0, _viewDefault.default) {
+    _todoList;
+    addHandlerDragAndDrop() {
+        (0, _allToDOsViewDefault.default)._userInputtodo.forEach((input)=>{
+            input.addEventListener('keydown', (e)=>{
+                if (e.key === 'Enter') {
+                    this._todoList = [
+                        ...this._todocontainer.children
+                    ];
+                    this._todoList.forEach((list)=>{
+                        list.addEventListener('dragstart', (e)=>{
+                            let selected = e.target;
+                            this._todocontainer.addEventListener('dragover', (e)=>{
+                                e.preventDefault();
+                            });
+                            this._todocontainer.addEventListener('drop', (e)=>{
+                                this._todocontainer.appendChild(selected);
+                                selected = null;
+                            });
+                        });
+                    });
+                }
+            });
+        });
+    }
+}
+exports.default = new DragAndDrop();
 
 },{"./view":"hkkRj","./allToDOsView":"3EBHz","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["8zVio","8noxN"], "8noxN", "parcelRequire94c2")
 

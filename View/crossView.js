@@ -10,9 +10,10 @@ addHandlerClickCross(handler){
         if(e.target.classList.contains('todocheck')){
             let id=e.target.getAttribute('data-id');
             let alltodos=document.querySelectorAll('.todocheck');
+            console.log(id);
             alltodos.forEach(todo=>{
                 if(todo.checked){
-
+console.log("hello");
                     todo.setAttribute('disabled',true);
                     this._completedTodoArr.push(todo.getAttribute('data-id'));
 
@@ -25,7 +26,6 @@ addHandlerClickCross(handler){
             this._completedTodoArr=[...new Set(this._completedTodoArr)];
             console.log(this._completedTodoArr)
             handler(this._completedTodo,completedItem);
-
         }
     })
 }

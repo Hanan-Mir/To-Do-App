@@ -9,9 +9,11 @@ class CompletedView extends View{
         if(this._todocontainer.hasChildNodes){
             let completedEl=document.querySelector('.completed');
             completedEl.addEventListener('click',()=>{
+                this._todoInput.disabled=true;
                 this._todolistID=1;
                 this._todolistCrossID=1;
                 this._todoNum=1;
+                this._todoDeleteID=1;
                 let completedToDoEls=document.querySelectorAll('.todo');
                 completedToDoEls.forEach((el)=>{
                     console.log(el.classList);
@@ -39,8 +41,16 @@ class CompletedView extends View{
     <span class="checkbox"></span>
     <p class='todo${this._todolistID++} todo ${CName}' data-number=${this._todoNum++}>${data}</p>
     </div>
-    <img src="${cross}" class="cross" alt="" >
+    <img src="${cross}" class="cross" data-deleteID=${this._todoDeleteID++} alt="" >
     </div>`
+    }
+    _clearCompletedView(handler){
+        if(this._todocontainer.hasChildNodes){
+            let clearEl=document.querySelector('.clearcomp');
+            clearEl.addEventListener('click',()=>{
+                handler();
+            })
+        }
     }
 }
 export default new CompletedView()
